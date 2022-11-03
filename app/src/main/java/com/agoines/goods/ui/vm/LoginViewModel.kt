@@ -37,15 +37,13 @@ class LoginViewModel @Inject constructor(
         if (username.isNotEmpty() && password.isNotEmpty()) {
             viewModelScope.launch(IO) {
                 dataStore.data.map { preferences ->
-                    val loginResult = Post<LoginResult>(preferences[USER_URL] + "user/login") {
+                    preferences[USER_URL]!!
+                }.collect{
+                    val loginResult = Post<LoginResult>( it + "user/login") {
                         converter = MoshiConverter()
                         moshiJson(
                             LoginUserBean::class.java,
-                            LoginUserBean(
-                                autoLogin,
-                                username,
-                                password
-                            )
+                            LoginUserBean(autoLogin, username, password)
                         )
                     }.await()
                     when (loginResult.errCode) {
@@ -60,8 +58,8 @@ class LoginViewModel @Inject constructor(
 
                         else -> toast.showShortText(loginResult.errMsg)
                     }
-
                 }
+
             }
         } else {
             toast.showShortText("你信息没填全")

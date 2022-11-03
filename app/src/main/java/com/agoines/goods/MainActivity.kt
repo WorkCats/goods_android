@@ -5,7 +5,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme.colors
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
@@ -23,15 +25,19 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             Goods_androidTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = colors.background
-                ) {
-                    AppNavHost(
-                        viewModel.getStartDestination(this)
-                            .collectAsState(initial = Screen.Splash.route)
-                    )
+                Scaffold { paddingValues ->
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(paddingValues),
+                        color = colors.background
+                    ) {
+
+                        AppNavHost(
+                            viewModel.getStartDestination(this)
+                                .collectAsState(initial = Screen.Splash.route)
+                        )
+                    }
 
                 }
             }

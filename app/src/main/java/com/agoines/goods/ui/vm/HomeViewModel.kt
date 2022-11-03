@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.agoines.goods.bean.result.GetGoodResult
+import com.agoines.goods.converter.MoshiConverter
 import com.agoines.goods.data.TOKEN
 import com.agoines.goods.data.USER_URL
 import com.drake.net.NetConfig
@@ -15,7 +16,7 @@ import com.drake.net.interceptor.RequestInterceptor
 import com.drake.net.okhttp.setRequestInterceptor
 import com.drake.net.request.BaseRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -27,26 +28,42 @@ class HomeViewModel @Inject constructor(
     private val toast: Toast
 ) : ViewModel() {
     init {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(IO) {
             dataStore.data.map { preferences ->
-                NetConfig.initialize(preferences[USER_URL] + "") {
+                preferences[USER_URL]!!
+            }.collect{ url ->
+                NetConfig.initialize(url + "good/getGoodList") {
                     setRequestInterceptor(object : RequestInterceptor {
                         override fun interceptor(request: BaseRequest) {
-                            request.setHeader("authorization", preferences[TOKEN]!!)
+                            viewModelScope.launch(IO) {
+                                dataStore.data.map { preferences ->
+                                    preferences[TOKEN]!!
+                                }.collect { token ->
+                                    request.setHeader("authorization", token)
+                                }
+                            }
                         }
                     })
+
                 }
             }
         }
     }
 
 
-    fun getGoodList(context: Context) {
-        viewModelScope.launch(Dispatchers.IO) {
-            dataStore.data.map { preferences ->
-                val getGoodResult = Post<GetGoodResult>(preferences[USER_URL] + "user/login") {
+    fun getGoodList() {
 
+        viewModelScope.launch(IO) {
+            dataStore.data.map { preferences ->
+                preferences[USER_URL]!!
+
+            }.collect{
+
+                val getGoodResult = Post<GetGoodResult>(it + "good/getGoodList") {
+                    converter = MoshiConverter()
                 }.await()
+
+                println(getGoodResult.goodList)
             }
         }
     }

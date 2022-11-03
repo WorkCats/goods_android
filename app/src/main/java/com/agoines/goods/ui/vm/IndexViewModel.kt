@@ -8,7 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.agoines.goods.data.Screen
-import com.agoines.goods.data.TOKEN
+import com.agoines.goods.data.USER_URL
 import com.agoines.goods.di.showShortText
 import com.agoines.goods.utils.isHttp
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,7 +27,9 @@ class IndexViewModel @Inject constructor(
 
         if (string.isHttp()) {
             this.viewModelScope.launch(IO) {
-                dataStore.edit { setting -> setting[TOKEN] = string }
+                dataStore.edit { setting ->
+                    setting[USER_URL] = string
+                }
                 this.launch(Main) {
                     navHostController.navigate(Screen.Login.route)
                 }
