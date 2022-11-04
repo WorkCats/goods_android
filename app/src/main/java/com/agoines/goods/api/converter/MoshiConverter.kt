@@ -1,4 +1,4 @@
-package com.agoines.goods.converter
+package com.agoines.goods.api.converter
 
 import com.drake.net.convert.JSONConvert
 import com.squareup.moshi.Moshi

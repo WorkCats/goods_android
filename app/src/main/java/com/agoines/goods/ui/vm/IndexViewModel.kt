@@ -3,12 +3,11 @@ package com.agoines.goods.ui.vm
 import android.widget.Toast
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.agoines.goods.data.Screen
-import com.agoines.goods.data.USER_URL
+import com.agoines.goods.data.setUrl
 import com.agoines.goods.di.showShortText
 import com.agoines.goods.utils.isHttp
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,13 +22,10 @@ class IndexViewModel @Inject constructor(
     private val toast: Toast
 ) : ViewModel() {
 
-    fun setUserURL(string: String, navHostController: NavHostController) {
-
-        if (string.isHttp()) {
+    fun setUserURL(url: String, navHostController: NavHostController) {
+        if (url.isHttp()) {
             this.viewModelScope.launch(IO) {
-                dataStore.edit { setting ->
-                    setting[USER_URL] = string
-                }
+                dataStore.setUrl(url)
                 this.launch(Main) {
                     navHostController.navigate(Screen.Login.route)
                 }

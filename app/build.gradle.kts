@@ -2,8 +2,8 @@ plugins {
     id("com.android.application")
     kotlin("android")
     kotlin("kapt")
-    id("com.google.devtools.ksp") version "1.7.20-1.0.8"
-    id("com.google.dagger.hilt.android") version "2.44"
+    id("com.google.devtools.ksp")
+    id("com.google.dagger.hilt.android")
 }
 
 val composeUICompilerVersion = "1.3.2"
@@ -59,8 +59,8 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class).all {
 
 dependencies {
     val composeUIVersion = "1.4.0-alpha01"
-    val nav_version = "2.5.3"
-    val lifecycle_version = "2.6.0-alpha03"
+    val navigationVersion = "2.5.3"
+    val lifecycleVersion = "2.6.0-alpha03"
 
     // 网络组件库
     implementation("com.squareup.okhttp3:okhttp:4.10.0")
@@ -72,8 +72,8 @@ dependencies {
     kapt("com.google.dagger:hilt-compiler:2.44")
 
     // ViewModel
-    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
-    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycleVersion")
 
     // Datastore
     implementation("androidx.datastore:datastore-preferences:1.1.0-dev01")
@@ -89,7 +89,7 @@ dependencies {
     implementation("androidx.compose.ui:ui:$composeUIVersion")
     implementation("androidx.compose.ui:ui-tooling-preview:$composeUIVersion")
     implementation("androidx.compose.material:material:1.4.0-alpha01")
-    implementation("androidx.navigation:navigation-compose:$nav_version")
+    implementation("androidx.navigation:navigation-compose:$navigationVersion")
 
     // 一个 compose 组件
     implementation("me.saket.swipe:swipe:1.0.0")

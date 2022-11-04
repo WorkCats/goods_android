@@ -1,4 +1,4 @@
-package com.agoines.goods.bean
+package com.agoines.goods.api.bean
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
