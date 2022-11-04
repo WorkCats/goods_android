@@ -28,23 +28,26 @@ fun LoginScene(
     navController: NavHostController,
     viewModel: LoginViewModel = hiltViewModel()
 ) {
-    val usernameText = remember {
-        mutableStateOf("")
-    }
-    val passwordText = remember {
-        mutableStateOf("")
-    }
-    var autoLogin by remember {
-        mutableStateOf(false)
-    }
+    /**
+     * 用户名
+     */
+    val usernameText = remember { mutableStateOf("") }
+
+    /**
+     * 密码
+     */
+    val passwordText = remember { mutableStateOf("") }
+
+    /**
+     * 是否自动登录
+     */
+    var autoLogin by remember { mutableStateOf(false) }
     Column(
         Modifier
             .fillMaxWidth()
             .fillMaxHeight()
     ) {
-        TopAppBar(title = {
-            Text(text = "初始化")
-        })
+        TopAppBar(title = { Text(text = "登录") })
 
         Column(
             Modifier
@@ -76,16 +79,30 @@ fun LoginScene(
                 onValueChange = { text ->
                     passwordText.value = text
                 })
+
             Row(modifier = Modifier.fillMaxWidth()) {
-                Text(text = "自动登录", modifier = Modifier.align(Alignment.CenterVertically).weight(1f))
-                Switch(checked = autoLogin, modifier = Modifier.align(Alignment.CenterVertically), onCheckedChange = { checked ->
-                    autoLogin = checked
-                })
+                Text(
+                    text = "自动登录",
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .weight(1f)
+                )
+                Switch(
+                    checked = autoLogin,
+                    modifier = Modifier.align(Alignment.CenterVertically),
+                    onCheckedChange = { checked ->
+                        autoLogin = checked
+                    })
             }
-            
+
             Button(
                 onClick = {
-                    viewModel.login(navController, usernameText.value, passwordText.value, autoLogin)
+                    viewModel.login(
+                        navController,
+                        usernameText.value,
+                        passwordText.value,
+                        autoLogin
+                    )
                 },
                 modifier = Modifier
                     .padding(top = 24.dp)

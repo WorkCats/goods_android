@@ -15,8 +15,8 @@ class MainViewModel : ViewModel() {
         return context.dataStore.data.map { preferences ->
             if (preferences[USER_URL] == null)
                 Screen.Index.route
-             else
-                if (preferences[TOKEN] == null) Screen.Login.route else Screen.Home.route
+            else if (preferences[TOKEN] == null) Screen.Login.route
+            else Screen.Home.route
         }
     }
 }

@@ -32,7 +32,6 @@ class MainActivity : ComponentActivity() {
                             .padding(paddingValues),
                         color = colors.background
                     ) {
-
                         AppNavHost(
                             viewModel.getStartDestination(this)
                                 .collectAsState(initial = Screen.Splash.route)
