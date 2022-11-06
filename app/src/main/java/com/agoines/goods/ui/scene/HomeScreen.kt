@@ -1,5 +1,6 @@
 package com.agoines.goods.ui.scene
 
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -23,6 +24,7 @@ import androidx.compose.material.icons.outlined.Face
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,7 +33,8 @@ import androidx.navigation.NavHostController
 import com.agoines.goods.ui.vm.HomeViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.agoines.goods.data.Good
-import com.agoines.goods.data.Screen
+import com.journeyapps.barcodescanner.ScanContract
+import com.journeyapps.barcodescanner.ScanOptions
 import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox
 
@@ -41,13 +44,22 @@ fun HomeScene(navHostController: NavHostController, viewModel: HomeViewModel = h
         mutableStateListOf<Good>()
     }
 
-    LaunchedEffect(null) {
-        viewModel.getGoodList().collect {
-            goodList.clear()
-            goodList.addAll(it)
-        }
+    val text = remember {
+        mutableStateOf("")
     }
 
+    LaunchedEffect(null) {
+        viewModel.getGoodList().collect {
+            if (goodList.isNotEmpty() && goodList != it) {
+                goodList.clear()
+                goodList.addAll(it)
+            }
+        }
+    }
+    val scanLauncher = rememberLauncherForActivityResult(
+        contract = ScanContract(),
+        onResult = { result -> text.value = result.contents?:"" }
+    )
     Column(
         Modifier
             .fillMaxWidth()
@@ -67,11 +79,13 @@ fun HomeScene(navHostController: NavHostController, viewModel: HomeViewModel = h
                     imageVector = Icons.Outlined.Face,
                     contentDescription = null,
                     modifier = Modifier.clickable {
-                        navHostController.navigate(Screen.Camera.route)
+                        scanLauncher.launch(ScanOptions())
                     }
                 )
             }
         )
+
+        Text(text = text.value)
 
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(

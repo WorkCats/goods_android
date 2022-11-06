@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     kotlin("android")
     kotlin("kapt")
+    kotlin("plugin.serialization")
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
 }
@@ -21,10 +22,6 @@ android {
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
-
-        vectorDrawables {
-            useSupportLibrary = true
-        }
     }
 
     buildTypes {
@@ -35,12 +32,12 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 
     buildFeatures {
@@ -65,14 +62,9 @@ dependencies {
     val navigationVersion = "2.5.3"
     val lifecycleVersion = "2.6.0-alpha03"
 
-    val cameraxVersion = "1.2.0-rc01"
-    // camera 库
-    implementation("androidx.camera:camera-core:${cameraxVersion}")
-    implementation("androidx.camera:camera-camera2:${cameraxVersion}")
-    implementation("androidx.camera:camera-lifecycle:${cameraxVersion}")
-    implementation("androidx.camera:camera-mlkit-vision:1.2.0-beta02")
     // 二维码识别
-    implementation("com.google.mlkit:barcode-scanning:17.0.2")
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+    implementation("com.google.zxing:core:3.5.1")
 
     // 网络组件库
     implementation("com.squareup.okhttp3:okhttp:4.10.0")
@@ -91,8 +83,7 @@ dependencies {
     implementation("androidx.datastore:datastore-preferences:1.1.0-dev01")
 
     // moshi 解析库
-    ksp("com.squareup.moshi:moshi-kotlin-codegen:1.14.0")
-    implementation("com.squareup.moshi:moshi:1.14.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
 
     // compose
     implementation("androidx.core:core-ktx:1.9.0")

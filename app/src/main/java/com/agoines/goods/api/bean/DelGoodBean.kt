@@ -1,9 +1,9 @@
 package com.agoines.goods.api.bean
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data  class DelGoodBean(
-    @Json(name = "good_id") val goodId: String
+    @SerialName(value = "good_id") val goodId: String
 )
