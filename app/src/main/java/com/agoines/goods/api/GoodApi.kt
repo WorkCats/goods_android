@@ -15,10 +15,10 @@ import kotlinx.coroutines.flow.flow
 
 
 context(CoroutineScope)
-        suspend fun DataStore<Preferences>.getGoodList(): Flow<GetGoodResult> {
+suspend fun DataStore<Preferences>.getGoodList(): Flow<GetGoodResult> {
     return flow {
         getUrlAndToken().collect { list ->
-            this.emit(
+            emit(
                 Post<GetGoodResult>(list[0] + "good/getGoodList") {
                     setHeader("authorization", list[1])
                     converter = SerializationConverter()
@@ -30,10 +30,10 @@ context(CoroutineScope)
 }
 
 context(CoroutineScope)
-        suspend fun DataStore<Preferences>.delGood(goodId: String): Flow<TextResult> {
+suspend fun DataStore<Preferences>.delGood(goodId: String): Flow<TextResult> {
     return flow {
         getUrlAndToken().collect { list ->
-            this.emit(
+            emit(
                 Post<TextResult>(list[0] + "good/delGood") {
                     setHeader("authorization", list[1])
                     converter = SerializationConverter()

@@ -8,4 +8,4 @@ data class LoginUserBean(
     @SerialName(value = "auto_login") val autoLogin: Boolean,
     val username: String,
     val password: String
-    )
+)

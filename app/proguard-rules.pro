@@ -1,14 +1,33 @@
--optimizationpasses 7
-
 -repackageclasses "com"
 -dontusemixedcaseclassnames
 # 指定不去忽略非公共库的类
 -dontskipnonpubliclibraryclasses
 
+#把混淆类中的方法名也混淆了
+-useuniqueclassmembernames
+
+#优化时允许访问并修改有修饰符的类和类的成员
 -allowaccessmodification
 -overloadaggressively
 
-#  datastore-preferences-core 混淆
+#保持泛型
+-keepattributes Signature
+
+
+-assumenosideeffects class kotlin.jvm.internal.Intrinsics {
+    public static void check*(...);
+    public static void throw*(...);
+}
+
+# 去除 DebugMetadataKt() 注释
+-assumenosideeffects class kotlin.coroutines.jvm.internal.BaseContinuationImpl {
+  java.lang.StackTraceElement getStackTraceElement() return null;
+}
+-assumenosideeffects public final class kotlin.coroutines.jvm.internal.DebugMetadataKt {
+   private static final kotlin.coroutines.jvm.internal.DebugMetadata getDebugMetadataAnnotation(kotlin.coroutines.jvm.internal.BaseContinuationImpl) return null;
+}
+
+# datastore-preferences-core 混淆
 -keepclassmembers class * extends androidx.datastore.preferences.protobuf.GeneratedMessageLite {
     <fields>;
 }
@@ -43,6 +62,16 @@
 -keepclassmembers class <2>$<3> {
     kotlinx.serialization.KSerializer serializer(...);
 }
+#（可选）避免Log打印输出
+-assumenosideeffects class android.util.Log {
+        public static *** v(...);
+        public static *** d(...);
+        public static *** i(...);
+        public static *** w(...);
+        public static *** e(...);
+}
+
+
 
 # Keep `INSTANCE.serializer()` of serializable objects.
 -if @kotlinx.serialization.Serializable class ** {
@@ -56,6 +85,12 @@
 # @Serializable and @Polymorphic are used at runtime for polymorphic serialization.
 -keepattributes RuntimeVisibleAnnotations,AnnotationDefault
 
+-keep class com.drake.net.**
+
+-keep class com.agoines.goods.api.**
+
+
+# 不去打印这些错误
 -dontwarn org.bouncycastle.jsse.BCSSLParameters
 -dontwarn org.bouncycastle.jsse.BCSSLSocket
 -dontwarn org.bouncycastle.jsse.provider.BouncyCastleJsseProvider
@@ -65,3 +100,6 @@
 -dontwarn org.openjsse.javax.net.ssl.SSLParameters
 -dontwarn org.openjsse.javax.net.ssl.SSLSocket
 -dontwarn org.openjsse.net.ssl.OpenJSSE
+# net 的组件
+-dontwarn com.drake.brv.PageRefreshLayout
+-dontwarn com.drake.statelayout.StateLayout

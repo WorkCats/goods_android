@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.flow
 
 
 context(CoroutineScope)
-        suspend fun DataStore<Preferences>.login(
+suspend fun DataStore<Preferences>.login(
     username: String,
     password: String,
     autoLogin: Boolean
