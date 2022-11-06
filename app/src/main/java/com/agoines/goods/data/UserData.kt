@@ -17,6 +17,7 @@ fun DataStore<Preferences>.getUrl(): Flow<String> {
         preferences[USER_URL]!!
     }
 }
+
 suspend fun DataStore<Preferences>.setUrl(url: String) {
     this@setUrl.edit { setting ->
         setting[USER_URL] = url
@@ -34,5 +35,12 @@ fun DataStore<Preferences>.getToken(): Flow<String> {
 suspend fun DataStore<Preferences>.setToken(token: String) {
     this@setToken.edit { setting ->
         setting[TOKEN] = token
+    }
+}
+
+fun DataStore<Preferences>.getUrlAndToken(): Flow<Array<String>> {
+
+    return this@getUrlAndToken.data.map { preferences ->
+        arrayOf(preferences[USER_URL]!!, preferences[TOKEN]!!)
     }
 }

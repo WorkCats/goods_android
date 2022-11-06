@@ -13,6 +13,8 @@ android {
     namespace = nameSpace
     compileSdk = 33
 
+    buildToolsVersion = "33.0.0"
+
     defaultConfig {
         applicationId = nameSpace
         minSdk = 28
@@ -51,6 +53,7 @@ android {
     packagingOptions {
         resources.excludes.addAll(listOf("META-INF/**", "kotlin/**", "google/**", "**.bin"))
     }
+
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class).all {
@@ -61,6 +64,15 @@ dependencies {
     val composeUIVersion = "1.4.0-alpha01"
     val navigationVersion = "2.5.3"
     val lifecycleVersion = "2.6.0-alpha03"
+
+    val cameraxVersion = "1.2.0-rc01"
+    // camera 库
+    implementation("androidx.camera:camera-core:${cameraxVersion}")
+    implementation("androidx.camera:camera-camera2:${cameraxVersion}")
+    implementation("androidx.camera:camera-lifecycle:${cameraxVersion}")
+    implementation("androidx.camera:camera-mlkit-vision:1.2.0-beta02")
+    // 二维码识别
+    implementation("com.google.mlkit:barcode-scanning:17.0.2")
 
     // 网络组件库
     implementation("com.squareup.okhttp3:okhttp:4.10.0")
@@ -94,12 +106,13 @@ dependencies {
     // 一个 compose 组件
     implementation("me.saket.swipe:swipe:1.0.0")
 
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.27.0")
     testImplementation("junit:junit:4.13.2")
-    androidTestImplementation ("androidx.test.ext:junit:1.1.3")
-    androidTestImplementation ("androidx.test.espresso:espresso-core:3.4.0")
-    androidTestImplementation ("androidx.compose.ui:ui-test-junit4:$composeUIVersion")
-    debugImplementation ("androidx.compose.ui:ui-tooling:$composeUIVersion")
-    debugImplementation ("androidx.compose.ui:ui-test-manifest:$composeUIVersion")
+    androidTestImplementation("androidx.test.ext:junit:1.1.3")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:$composeUIVersion")
+    debugImplementation("androidx.compose.ui:ui-tooling:$composeUIVersion")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:$composeUIVersion")
 }
 
 kapt {

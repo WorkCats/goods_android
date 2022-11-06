@@ -1,14 +1,20 @@
 package com.agoines.goods.ui.scene
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
@@ -25,6 +31,7 @@ import androidx.navigation.NavHostController
 import com.agoines.goods.ui.vm.HomeViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.agoines.goods.data.Good
+import com.agoines.goods.data.Screen
 import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox
 
@@ -36,17 +43,35 @@ fun HomeScene(navHostController: NavHostController, viewModel: HomeViewModel = h
 
     LaunchedEffect(null) {
         viewModel.getGoodList().collect {
+            goodList.clear()
             goodList.addAll(it)
         }
     }
+
     Column(
         Modifier
             .fillMaxWidth()
             .fillMaxHeight()
     ) {
+        Box(
+            modifier = Modifier
+                .windowInsetsTopHeight(WindowInsets.statusBars)
+                .fillMaxWidth()
+                .background(MaterialTheme.colors.primaryVariant)
+        )
         TopAppBar(title = {
             Text(text = "首页")
-        })
+        },
+            actions = {
+                Icon(
+                    imageVector = Icons.Outlined.Face,
+                    contentDescription = null,
+                    modifier = Modifier.clickable {
+                        navHostController.navigate(Screen.Camera.route)
+                    }
+                )
+            }
+        )
 
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(

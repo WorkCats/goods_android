@@ -1,12 +1,19 @@
 package com.agoines.goods.ui.scene
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
@@ -46,8 +53,16 @@ fun LoginScene(
         Modifier
             .fillMaxWidth()
             .fillMaxHeight()
+            .statusBarsPadding()
     ) {
-        TopAppBar(title = { Text(text = "登录") })
+        Box(
+            modifier = Modifier
+                .windowInsetsTopHeight(WindowInsets.statusBars)
+                .fillMaxWidth()
+                .background(colors.primaryVariant)
+        )
+        TopAppBar(
+            title = { Text(text = "登录") })
 
         Column(
             Modifier

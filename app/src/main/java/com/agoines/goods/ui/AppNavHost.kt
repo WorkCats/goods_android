@@ -9,6 +9,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.agoines.goods.data.Screen
+import com.agoines.goods.ui.scene.CameraScene
 import com.agoines.goods.ui.scene.HomeScene
 import com.agoines.goods.ui.scene.IndexScene
 import com.agoines.goods.ui.scene.LoginScene
@@ -24,10 +25,14 @@ fun AppNavHost(
             navController = navController,
             startDestination = startDestination.value
         ) {
+
+
             composable(Screen.Splash.route) {
                 SplashScreen(navController)
             }
             composable(Screen.Home.route) {
+
+
                 HomeScene(navController)
             }
             composable(Screen.Index.route) {
@@ -36,7 +41,9 @@ fun AppNavHost(
             composable(Screen.Login.route) {
                 LoginScene(navController)
             }
-
+            composable(Screen.Camera.route) {
+                CameraScene(navController)
+            }
         }
 
 }

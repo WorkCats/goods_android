@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.agoines.goods.api.login
 import com.agoines.goods.data.Screen
-import com.agoines.goods.data.getUrl
 import com.agoines.goods.data.setToken
 import com.agoines.goods.di.showShortText
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,8 +29,7 @@ class LoginViewModel @Inject constructor(
     ) {
         if (username.isNotEmpty() && password.isNotEmpty()) {
             viewModelScope.launch(IO) {
-                dataStore.getUrl().collect{ url ->
-                    val loginResult = url.login(username, password, autoLogin)
+                dataStore.login(username, password, autoLogin).collect { loginResult ->
                     when (loginResult.errCode) {
                         0 -> {
                             dataStore.setToken(loginResult.token)
@@ -39,10 +37,10 @@ class LoginViewModel @Inject constructor(
                                 navController.navigate(Screen.Home.route)
                             }
                         }
+
                         else -> toast.showShortText(loginResult.errMsg)
                     }
                 }
-
             }
         } else {
             toast.showShortText("你信息没填全")
