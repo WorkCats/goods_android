@@ -3,16 +3,12 @@
 # 指定不去忽略非公共库的类
 -dontskipnonpubliclibraryclasses
 
-#把混淆类中的方法名也混淆了
--useuniqueclassmembernames
-
 #优化时允许访问并修改有修饰符的类和类的成员
 -allowaccessmodification
 -overloadaggressively
 
 #保持泛型
 -keepattributes Signature
-
 
 -assumenosideeffects class kotlin.jvm.internal.Intrinsics {
     public static void check*(...);
@@ -87,7 +83,7 @@
 
 -keep class com.drake.net.**
 
--keep class com.agoines.goods.api.**
+-keep class com.agoines.goods.**
 
 
 # 不去打印这些错误
