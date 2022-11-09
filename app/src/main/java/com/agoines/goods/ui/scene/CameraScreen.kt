@@ -11,6 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavHostController
 import com.agoines.goods.data.Screen
@@ -22,6 +23,8 @@ import com.journeyapps.barcodescanner.CompoundBarcodeView
 fun CameraScene(
     navController: NavHostController
 ) {
+
+    val compoundBarcodeView = CompoundBarcodeView(LocalContext.current)
     val systemUiController = rememberSystemUiController()
     val useDarkIcons = isSystemInDarkTheme()
     DisposableEffect(systemUiController, useDarkIcons) {
@@ -35,18 +38,18 @@ fun CameraScene(
             navigationBarContrastEnforced = false,
             darkIcons = !useDarkIcons
         )
-
         onDispose {
-
+            compoundBarcodeView.pauseAndWait()
         }
     }
+
     var scanFlag by remember {
         mutableStateOf(false)
     }
 
     AndroidView(
         factory = { context ->
-            CompoundBarcodeView(context).apply {
+            compoundBarcodeView.apply {
                 val capture = CaptureManager(context as Activity, this)
                 capture.initializeFromIntent(context.intent, null)
                 this.setStatusText("")
@@ -56,15 +59,17 @@ fun CameraScene(
 
                     result?.let {
                         Log.d("结果", it.text + it.barcodeFormat.name, )
-                        navController.navigate(Screen.AddDialog.route)
+                        navController.navigate(Screen.AddDialog.route+"/${it.barcodeFormat.name}_${it.text}")
                         scanFlag = true
                     }
 
-
                 }
                 this.resume()
+
             }
         },
         modifier = Modifier
     )
+
+
 }

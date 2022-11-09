@@ -17,9 +17,9 @@ import java.lang.reflect.Type
 import kotlin.reflect.KType
 
 class SerializationConverter(
-    val success: String = "0",
-    val code: String = "errorCode",
-    val message: String = "errorMsg",
+    private val success: String = "0",
+    private val code: String = "errorCode",
+    private val message: String = "errorMsg",
 ) : NetConverter {
 
     companion object {
@@ -43,7 +43,7 @@ class SerializationConverter(
                         val json = JSONObject(bodyString) // 获取JSON中后端定义的错误码和错误信息
                         val srvCode = json.getString(this.code)
                         if (srvCode == success) { // 对比后端自定义错误码
-                            json.getString("data").parseBody<R>(kType)
+                            return json.getString("data").parseBody<R>(kType)
                         } else { // 错误码匹配失败, 开始写入错误异常
                             val errorMessage = json.optString(
                                 message,
@@ -56,7 +56,7 @@ class SerializationConverter(
                             ) // 将业务错误码作为tag传递
                         }
                     } catch (e: JSONException) { // 固定格式JSON分析失败直接解析JSON
-                        bodyString.parseBody<R>(kType)
+                        bodyString.parseBody(kType)
                     }
                 }
 
@@ -69,8 +69,11 @@ class SerializationConverter(
             }
         }
     }
-
-    private fun <R> String.parseBody(succeed: KType): R? {
-        return jsonDecoder.decodeFromString(Json.serializersModule.serializer(succeed), this) as R
+    @Suppress("UNCHECKED_CAST")
+    private fun  <R> String.parseBody(succeed: KType): R? {
+        return jsonDecoder.decodeFromString(
+            Json.serializersModule.serializer(succeed),
+            this
+        ) as R?
     }
 }

@@ -19,22 +19,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 
 @Composable
-fun AddDialog(
+fun UpdateDialog(
     navController: NavHostController,
-    goodId: String? = null
+    goodId: String
 ) {
     /**
      * 商品名
      */
     val name = remember { mutableStateOf("") }
-
-    /**
-     * id
-     */
-    val id = remember { mutableStateOf(goodId?:"") }
 
     /**
      * 用户名
@@ -51,7 +47,8 @@ fun AddDialog(
             .background(Color.White)
             .padding(vertical = 20.dp, horizontal = 20.dp)
     ) {
-        Text(text = "货物添加")
+        Text(text = "货物更新")
+        Text(text = "更新的 ID 为 $goodId", fontSize = 12.sp, modifier = Modifier.padding(top = 10.dp))
         TextField(modifier = Modifier.padding(top = 20.dp),
             value = name.value,
             label = { Text("名称") },
@@ -60,15 +57,6 @@ fun AddDialog(
             },
             onValueChange = {
                 name.value = it
-            })
-        TextField(modifier = Modifier.padding(top = 20.dp),
-            value = id.value,
-            label = { Text("ID") },
-            placeholder = {
-                Text("请输入货物对应的ID")
-            },
-            onValueChange = {
-                id.value = it
             })
         TextField(
             modifier = Modifier.padding(top = 20.dp),
@@ -82,7 +70,9 @@ fun AddDialog(
             }
         )
         Row(
-            modifier = Modifier.padding(top = 20.dp).fillMaxWidth(),
+            modifier = Modifier
+                .padding(top = 20.dp)
+                .fillMaxWidth(),
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -90,7 +80,7 @@ fun AddDialog(
                 Text(text = "取消")
             }
             Button(onClick = { /*TODO*/ }) {
-                Text(text = if(goodId == null)"确定" else "下一个")
+                Text(text = "确定")
             }
         }
 
