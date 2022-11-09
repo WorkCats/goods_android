@@ -11,7 +11,7 @@ buildscript {
         gradlePluginPortal()
     }
 
-    val gradleVersion = "8.0.0-alpha07"
+    val gradleVersion = "8.0.0-alpha08"
     val kotlinVersion = "1.7.20"
 
     dependencies {

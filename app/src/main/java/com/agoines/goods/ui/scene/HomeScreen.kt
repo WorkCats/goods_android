@@ -1,6 +1,5 @@
 package com.agoines.goods.ui.scene
 
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -9,6 +8,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsTopHeight
@@ -22,15 +22,16 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Call
-import androidx.compose.material.icons.outlined.Face
-import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.CameraAlt
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.EditNote
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,9 +40,9 @@ import androidx.navigation.NavHostController
 import com.agoines.goods.ui.vm.HomeViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.agoines.goods.data.Good
+import com.agoines.goods.data.Screen
 import com.agoines.goods.ui.composable.MultiFabItem
 import com.agoines.goods.ui.composable.MultiFloatingActionButton
-import com.journeyapps.barcodescanner.ScanContract
 import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox
 
@@ -51,63 +52,61 @@ fun HomeScene(navHostController: NavHostController, viewModel: HomeViewModel = h
         mutableStateListOf<Good>()
     }
 
-    val text = remember {
-        mutableStateOf("")
-    }
-
     LaunchedEffect(null) {
         viewModel.getGoodList().collect {
-            if (goodList.isNotEmpty() && goodList != it) {
+            if (goodList.isEmpty()) {
+                goodList.addAll(it)
+            } else if (goodList != it) {
                 goodList.clear()
                 goodList.addAll(it)
             }
         }
     }
-    val scanLauncher = rememberLauncherForActivityResult(
-        contract = ScanContract(),
-        onResult = { result -> text.value = result.contents?:"" }
-    )
+
     val scaffoldState = rememberScaffoldState()
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
-                Column {
-                    Box(
-                        modifier = Modifier
-                            .windowInsetsTopHeight(WindowInsets.statusBars)
-                            .fillMaxWidth()
-                            .background(MaterialTheme.colors.primaryVariant)
-                    )
-                    TopAppBar(title = {
+            Column {
+                Box(
+                    modifier = Modifier
+                        .windowInsetsTopHeight(WindowInsets.statusBars)
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colors.primaryVariant)
+                )
+                TopAppBar(
+                    title = {
                         Text(text = "首页")
                     },
-                        actions = {
-                            Icon(
-                                imageVector = Icons.Outlined.Face,
-                                contentDescription = null,
-                                modifier = Modifier.clickable {
-
+                    actions = {
+                        Icon(
+                            imageVector = Icons.Rounded.Settings,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .padding(end = 12.dp)
+                                .clickable {
                                 }
-                            )
-                        }
-                    )
-                }
+                        )
+                    }
+                )
+            }
         },
         floatingActionButton = {
             MultiFloatingActionButton(
-                srcIcon = Icons.Outlined.Add,
+                modifier = Modifier.navigationBarsPadding(),
+                srcIcon = Icons.Rounded.Add,
                 items = arrayListOf(
                     MultiFabItem(
-                        label = "扫码",
-                        icon = Icons.Outlined.Home
+                        label = "手动输入",
+                        icon = Icons.Rounded.EditNote
                     ),
                     MultiFabItem(
                         label = "扫码",
-                        icon = Icons.Outlined.Call
+                        icon = Icons.Outlined.CameraAlt
                     )
                 ),
                 onFabItemClicked = {
-
+                    navHostController.navigate(Screen.Camera.route)
                 }
             )
 //            ExtendedFloatingActionButton(
@@ -118,9 +117,13 @@ fun HomeScene(navHostController: NavHostController, viewModel: HomeViewModel = h
 //            )
         },
         floatingActionButtonPosition = FabPosition.End,
-//屏幕内容区域
-        content= {
-            LazyColumn(modifier = Modifier.fillMaxSize().padding(it)) {
+        //屏幕内容区域
+        content = {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(it)
+            ) {
                 items(
                     items = goodList,
                     key = { good ->
@@ -134,13 +137,16 @@ fun HomeScene(navHostController: NavHostController, viewModel: HomeViewModel = h
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(96.dp),
-                        good = good
-                    ) {
-                        viewModel.delGood(goodId = good.id) {
-                            goodList.remove(good)
-                        }
+                        good = good,
+                        deleteEvent = {
+                            viewModel.delGood(goodId = good.id) {
+                                goodList.remove(good)
+                            }
+                        },
+                        editEvent = {
 
-                    }
+                        }
+                    )
                 }
             }
         })
@@ -163,31 +169,31 @@ fun HomeScene(navHostController: NavHostController, viewModel: HomeViewModel = h
 }
 
 @Composable
-fun GoodItem(modifier: Modifier, good: Good, event: () -> Unit) {
+fun GoodItem(modifier: Modifier, good: Good, deleteEvent: () -> Unit, editEvent: () -> Unit) {
     val archive = SwipeAction(
         icon = {
             Icon(
-                imageVector = Icons.Outlined.Face,
+                imageVector = Icons.Rounded.Delete,
                 contentDescription = null,
             )
         },
         background = Color.Green,
         onSwipe = {
-            event.invoke()
+            deleteEvent.invoke()
         }
     )
 
     val snooze = SwipeAction(
         icon = {
             Icon(
-                imageVector = Icons.Outlined.Face,
+                imageVector = Icons.Rounded.Edit,
                 contentDescription = null,
             )
         },
         background = Color.Yellow,
         isUndo = true,
         onSwipe = {
-
+            editEvent.invoke()
         },
     )
 

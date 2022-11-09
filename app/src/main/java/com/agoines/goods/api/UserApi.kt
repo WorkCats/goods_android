@@ -3,7 +3,7 @@ package com.agoines.goods.api
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.agoines.goods.api.bean.LoginUserBean
-import com.agoines.goods.api.bean.result.LoginResult
+import com.agoines.goods.api.result.LoginResult
 import com.agoines.goods.api.converter.SerializationConverter
 import com.agoines.goods.api.converter.serializationJson
 import com.agoines.goods.data.getUrl

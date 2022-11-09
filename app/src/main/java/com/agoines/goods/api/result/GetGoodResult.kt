@@ -1,4 +1,4 @@
-package com.agoines.goods.api.bean.result
+package com.agoines.goods.api.result
 
 import com.agoines.goods.data.Good
 

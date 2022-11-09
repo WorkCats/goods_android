@@ -18,6 +18,10 @@ fun DataStore<Preferences>.getUrl(): Flow<String> {
     }
 }
 
+/**
+ * 设置配置对应 url
+ * @param url 配置 url
+ */
 suspend fun DataStore<Preferences>.setUrl(url: String) {
     this@setUrl.edit { setting ->
         setting[USER_URL] = url
