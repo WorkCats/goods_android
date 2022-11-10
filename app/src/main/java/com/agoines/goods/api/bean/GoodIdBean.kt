@@ -4,6 +4,6 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class DelGoodBean(
+data class GoodIdBean(
     @SerialName(value = "good_id") val goodId: String
 )

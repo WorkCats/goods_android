@@ -2,9 +2,10 @@ package com.agoines.goods.api
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import com.agoines.goods.api.bean.DelGoodBean
+import com.agoines.goods.api.bean.GoodIdBean
 import com.agoines.goods.api.bean.GoodBean
-import com.agoines.goods.api.result.GetGoodResult
+import com.agoines.goods.api.bean.GoodNameBean
+import com.agoines.goods.api.result.GoodListResult
 import com.agoines.goods.api.result.TextResult
 import com.agoines.goods.api.converter.SerializationConverter
 import com.agoines.goods.api.converter.serializationJson
@@ -17,11 +18,11 @@ import kotlinx.coroutines.flow.flow
 
 
 context(CoroutineScope)
-        suspend fun DataStore<Preferences>.getGoodList(): Flow<GetGoodResult> {
+        suspend fun DataStore<Preferences>.getGoodList(): Flow<GoodListResult> {
     return flow {
         getUrlAndToken().collect { list ->
             emit(
-                Post<GetGoodResult>(list[0] + "good/getGoodList") {
+                Post<GoodListResult>(list[0] + "good/getGoodList") {
                     setHeader("authorization", list[1])
                     converter = SerializationConverter()
                 }.await()
@@ -40,7 +41,24 @@ context(CoroutineScope)
                     setHeader("authorization", list[1])
                     converter = SerializationConverter()
                     serializationJson(
-                        DelGoodBean(goodId)
+                        GoodIdBean(goodId)
+                    )
+                }.await()
+            )
+        }
+    }
+}
+
+context(CoroutineScope)
+        suspend fun DataStore<Preferences>.searchGood(goodName: String): Flow<GoodListResult> {
+    return flow {
+        getUrlAndToken().collect { list ->
+            emit(
+                Post<GoodListResult>(list[0] + "good/searchGood") {
+                    setHeader("authorization", list[1])
+                    converter = SerializationConverter()
+                    serializationJson(
+                        GoodNameBean(goodName)
                     )
                 }.await()
             )
@@ -86,6 +104,23 @@ context(CoroutineScope)
                             size = good.size,
                             userName = good.userName
                         )
+                    )
+                }.await()
+            )
+        }
+    }
+}
+
+context(CoroutineScope)
+        suspend fun DataStore<Preferences>.hasGood(goodId: String): Flow<TextResult> {
+    return flow {
+        getUrlAndToken().collect { list ->
+            emit(
+                Post<TextResult>(list[0] + "good/hasGood") {
+                    setHeader("authorization", list[1])
+                    converter = SerializationConverter()
+                    serializationJson(
+                        GoodIdBean(goodId)
                     )
                 }.await()
             )
