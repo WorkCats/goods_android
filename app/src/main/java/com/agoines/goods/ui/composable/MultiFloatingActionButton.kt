@@ -72,29 +72,29 @@ fun MultiFloatingActionButton(
         if (state.value == MultiFabState.Expanded) 1F else 0F
     }
     //记录每个Item的收缩动画的Transition
-    val shrinkListAnim:MutableList<Float> = mutableListOf()
+    val shrinkListAnim: MutableList<Float> = mutableListOf()
     items.forEachIndexed { index, _ ->
         //循环生成Transition
         val shrinkAnim by transition.animateFloat(targetValueByState = { state ->
             when (state.value) {
                 MultiFabState.Collapsed -> 5F
                 //根据位置，递增每个item的位置高度
-                MultiFabState.Expanded -> (index + 1) * 60F + if(index == 0) 5F else 0F
+                MultiFabState.Expanded -> (index + 1) * 60F + if (index == 0) 5F else 0F
             }
         }, label = "", transitionSpec = {
             if (targetState.value == MultiFabState.Expanded) {
                 //dampingRatio属性删除等于默认1F，没有回弹效果
-                spring(stiffness = Spring.StiffnessLow,dampingRatio = 0.58F)
+                spring(stiffness = Spring.StiffnessLow, dampingRatio = 0.58F)
             } else {
                 spring(stiffness = Spring.StiffnessMedium)
             }
         })
         //添加到收缩列表中
-        shrinkListAnim.add(index,shrinkAnim)
+        shrinkListAnim.add(index, shrinkAnim)
     }
     Box(modifier = modifier, contentAlignment = Alignment.BottomEnd) {
         //创建多个Item,Fab按钮
-        items.forEachIndexed{index, item ->
+        items.forEachIndexed { index, item ->
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
@@ -145,7 +145,7 @@ fun MultiFloatingActionButton(
         //"+"号，切换按钮
         FloatingActionButton(
             modifier = Modifier.padding(0.dp, end = 25.dp),
-            backgroundColor = if(fabBackgroundColor == Color.Unspecified) MaterialTheme.colors.primary else fabBackgroundColor,
+            backgroundColor = if (fabBackgroundColor == Color.Unspecified) MaterialTheme.colors.primary else fabBackgroundColor,
             onClick = {
                 //更新状态执行：收缩动画
                 currentState.value =

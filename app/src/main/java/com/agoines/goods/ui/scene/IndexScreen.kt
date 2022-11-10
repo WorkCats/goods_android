@@ -69,7 +69,7 @@ fun IndexScene(
 
             Button(
                 onClick = {
-                    viewModel.setUserURL(urlText.value, navController)
+                    viewModel.setUserURL(navController, urlText.value)
                 },
                 modifier = Modifier
                     .padding(top = 24.dp)

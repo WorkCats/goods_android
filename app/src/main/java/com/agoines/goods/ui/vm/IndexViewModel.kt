@@ -22,7 +22,7 @@ class IndexViewModel @Inject constructor(
     private val toast: Toast
 ) : ViewModel() {
 
-    fun setUserURL(url: String, navHostController: NavHostController) {
+    fun setUserURL(navHostController: NavHostController, url: String) {
         if (url.isHttp()) {
             this.viewModelScope.launch(IO) {
                 dataStore.setUrl(url)
