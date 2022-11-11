@@ -58,10 +58,11 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class).all {
 }
 
 dependencies {
-    val composeUIVersion = "1.4.0-alpha01"
+    val composeUIVersion = "1.4.0-alpha02"
     val navigationVersion = "2.5.3"
     val lifecycleVersion = "2.6.0-alpha03"
-
+    // 浏览器使用
+    implementation("androidx.browser:browser:1.4.0")
     // 二维码识别
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
     implementation("com.google.zxing:core:3.5.1")
@@ -80,7 +81,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycleVersion")
 
     // Datastore
-    implementation("androidx.datastore:datastore-preferences:1.1.0-dev01")
+    implementation("androidx.datastore:datastore-preferences:1.1.0-alpha01")
 
     // moshi 解析库
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
@@ -100,8 +101,8 @@ dependencies {
     // compose 组件
     implementation("me.saket.swipe:swipe:1.0.0")
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.27.0")
-    // 浏览器使用
-    implementation("androidx.browser:browser:1.4.0")
+    implementation("com.github.develNerd:JC-CustomSwitch:1.0.1")
+
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")

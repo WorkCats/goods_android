@@ -1,15 +1,20 @@
 package com.agoines.goods.ui.scene
 
 import android.app.Activity
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Snackbar
 import androidx.compose.material.SnackbarHost
-import androidx.compose.material.SnackbarResult.ActionPerformed
-import androidx.compose.material.SnackbarResult.Dismissed
+import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.OpenInBrowser
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -18,6 +23,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -67,12 +73,35 @@ fun CameraScene(
     Scaffold(
         scaffoldState = scaffoldState,
         snackbarHost = {
-            SnackbarHost(it, Modifier.navigationBarsPadding()) { data ->
+            SnackbarHost(
+                hostState = it,
+                modifier = Modifier
+                    .navigationBarsPadding()
+                    .padding(12.dp)
+            ) { data ->
                 Snackbar(
-                    modifier = Modifier.padding(8.dp),
+                    action = {
+                        Row(
+                            modifier = Modifier.clickable {
+                                viewModel.gotoURL(navController, data.message)
+                            },
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text(
+                                text = "打开", modifier = Modifier
+                                    .padding(horizontal = 4.dp)
+                            )
+                            Icon(
+                                imageVector = Icons.Rounded.OpenInBrowser,
+                                contentDescription = ""
+                            )
+                        }
 
-                    snackbarData = data
-                )
+                    }
+                ) {
+                    Text(text = data.message)
+                }
             }
         },
     ) { padding ->
@@ -97,18 +126,11 @@ fun CameraScene(
                 if (result!!.text.isHttp()) {
                     scope.launch {
                         val snackbarResult = scaffoldState.snackbarHostState.showSnackbar(
-                            message = "你扫描的是链接: ${result.text}",
+                            message = result.text,
                             actionLabel = "前往",
                         )
 
-                        scanFlag = when (snackbarResult) {
-                            ActionPerformed -> {
-                                compoundBarcodeView.pauseAndWait()
-                                viewModel.gotoURL(navController, result.text)
-                                false
-                            }
-                            Dismissed -> false
-                        }
+                        scanFlag = false
 
                     }
                 } else {

@@ -14,7 +14,6 @@ import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
@@ -28,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.agoines.goods.ui.vm.LoginViewModel
+import jc.iakakpo.customswitch.JCSwitch
 
 @Composable
 fun LoginScene(
@@ -100,12 +100,13 @@ fun LoginScene(
                         .align(Alignment.CenterVertically)
                         .weight(1f)
                 )
-                Switch(
-                    checked = autoLogin,
-                    modifier = Modifier.align(Alignment.CenterVertically),
-                    onCheckedChange = { checked ->
-                        autoLogin = checked
-                    })
+
+                JCSwitch(
+                    isChecked = autoLogin,
+                    modifier = Modifier.align(Alignment.CenterVertically)
+                ) { checked ->
+                    autoLogin = checked
+                }
             }
 
             Button(
