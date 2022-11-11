@@ -2,32 +2,48 @@ package com.agoines.goods.ui.scene
 
 import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Snackbar
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarResult.ActionPerformed
+import androidx.compose.material.SnackbarResult.Dismissed
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.agoines.goods.ui.vm.CameraViewModel
+import com.agoines.goods.utils.isHttp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.journeyapps.barcodescanner.CaptureManager
 import com.journeyapps.barcodescanner.CompoundBarcodeView
+import kotlinx.coroutines.launch
 
 @Composable
 fun CameraScene(
     navController: NavHostController,
     viewModel: CameraViewModel = hiltViewModel()
 ) {
+    val scaffoldState = rememberScaffoldState()
+    val scope = rememberCoroutineScope()
 
     val compoundBarcodeView = CompoundBarcodeView(LocalContext.current)
     val systemUiController = rememberSystemUiController()
     val useDarkIcons = isSystemInDarkTheme()
+
     DisposableEffect(systemUiController, useDarkIcons) {
         systemUiController.setSystemBarsColor(
             color = Color.Transparent,
@@ -48,28 +64,62 @@ fun CameraScene(
         mutableStateOf(false)
     }
 
-    AndroidView(
-        factory = { context ->
-            compoundBarcodeView.apply {
-                val capture = CaptureManager(context as Activity, this)
-                capture.initializeFromIntent(context.intent, null)
-                this.setStatusText("")
-                capture.decode()
-                this.decodeContinuous { result ->
-                    if (scanFlag) return@decodeContinuous
+    Scaffold(
+        scaffoldState = scaffoldState,
+        snackbarHost = {
+            SnackbarHost(it, Modifier.navigationBarsPadding()) { data ->
+                Snackbar(
+                    modifier = Modifier.padding(8.dp),
 
-                    result?.let {
-                        viewModel.decodeResult(navController, "${it.barcodeFormat.name}_${it.text}")
-                        scanFlag = true
-                    }
-
-                }
-                this.resume()
-
+                    snackbarData = data
+                )
             }
         },
-        modifier = Modifier
-    )
+    ) { padding ->
+        AndroidView(
+            factory = { context ->
+                compoundBarcodeView.apply {
+                    CaptureManager(context as Activity, this).apply {
+                        initializeFromIntent(context.intent, null)
+                        decode()
+                    }
 
+                    this.setStatusText("")
+                }
+            },
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize()
+        ) { view ->
+            view.decodeContinuous { result ->
+                if (scanFlag) return@decodeContinuous
+                scanFlag = true
+                if (result!!.text.isHttp()) {
+                    scope.launch {
+                        val snackbarResult = scaffoldState.snackbarHostState.showSnackbar(
+                            message = "你扫描的是链接: ${result.text}",
+                            actionLabel = "前往",
+                        )
 
+                        scanFlag = when (snackbarResult) {
+                            ActionPerformed -> {
+                                compoundBarcodeView.pauseAndWait()
+                                viewModel.gotoURL(navController, result.text)
+                                false
+                            }
+                            Dismissed -> false
+                        }
+
+                    }
+                } else {
+                    viewModel.decodeResult(
+                        navController,
+                        "${result.barcodeFormat.name}_${result.text}"
+                    )
+                }
+            }
+            view.resume()
+
+        }
+    }
 }

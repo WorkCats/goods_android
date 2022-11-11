@@ -9,6 +9,7 @@ import com.agoines.goods.api.result.GoodListResult
 import com.agoines.goods.api.result.TextResult
 import com.agoines.goods.api.converter.SerializationConverter
 import com.agoines.goods.api.converter.serializationJson
+import com.agoines.goods.api.result.GoodResult
 import com.agoines.goods.data.Good
 import com.agoines.goods.data.getUrlAndToken
 import com.drake.net.Post
@@ -117,6 +118,23 @@ context(CoroutineScope)
         getUrlAndToken().collect { list ->
             emit(
                 Post<TextResult>(list[0] + "good/hasGood") {
+                    setHeader("authorization", list[1])
+                    converter = SerializationConverter()
+                    serializationJson(
+                        GoodIdBean(goodId)
+                    )
+                }.await()
+            )
+        }
+    }
+}
+
+context(CoroutineScope)
+        suspend fun DataStore<Preferences>.getGoodById(goodId: String): Flow<GoodResult> {
+    return flow {
+        getUrlAndToken().collect { list ->
+            emit(
+                Post<GoodResult>(list[0] + "good/getGoodById") {
                     setHeader("authorization", list[1])
                     converter = SerializationConverter()
                     serializationJson(

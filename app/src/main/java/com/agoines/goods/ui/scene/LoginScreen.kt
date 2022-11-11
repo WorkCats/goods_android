@@ -13,9 +13,9 @@ import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.MaterialTheme.colors
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -68,7 +68,7 @@ fun LoginScene(
                 .fillMaxHeight()
                 .padding(24.dp)
         ) {
-            TextField(
+            OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth(),
                 value = usernameText.value,
@@ -80,7 +80,7 @@ fun LoginScene(
                     usernameText.value = text
                 })
 
-            TextField(
+            OutlinedTextField(
                 modifier = Modifier
                     .padding(top = 24.dp)
                     .fillMaxWidth(),

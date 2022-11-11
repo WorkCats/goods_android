@@ -100,7 +100,8 @@ dependencies {
     // compose 组件
     implementation("me.saket.swipe:swipe:1.0.0")
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.27.0")
-
+    // 浏览器使用
+    implementation("androidx.browser:browser:1.4.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")

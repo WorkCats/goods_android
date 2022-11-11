@@ -7,9 +7,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Slider
+import androidx.compose.material.SliderDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
-import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -24,7 +26,7 @@ import androidx.navigation.NavHostController
 @Composable
 fun AddDialog(
     navController: NavHostController,
-    goodId: String? = null
+    goodId: String = ""
 ) {
     /**
      * 商品名
@@ -34,7 +36,7 @@ fun AddDialog(
     /**
      * id
      */
-    val id = remember { mutableStateOf(goodId?:"") }
+    val id = remember { mutableStateOf(goodId) }
 
     /**
      * 用户名
@@ -52,7 +54,8 @@ fun AddDialog(
             .padding(vertical = 20.dp, horizontal = 20.dp)
     ) {
         Text(text = "货物添加")
-        TextField(modifier = Modifier.padding(top = 20.dp),
+
+        OutlinedTextField(modifier = Modifier.padding(top = 20.dp),
             value = name.value,
             label = { Text("名称") },
             placeholder = {
@@ -61,7 +64,7 @@ fun AddDialog(
             onValueChange = {
                 name.value = it
             })
-        TextField(modifier = Modifier.padding(top = 20.dp),
+        OutlinedTextField(modifier = Modifier.padding(top = 20.dp),
             value = id.value,
             label = { Text("ID") },
             placeholder = {
@@ -70,7 +73,8 @@ fun AddDialog(
             onValueChange = {
                 id.value = it
             })
-        TextField(
+
+        OutlinedTextField(
             modifier = Modifier.padding(top = 20.dp),
             value = userName.value,
             label = { Text("所属用户") },
@@ -81,8 +85,21 @@ fun AddDialog(
                 userName.value = it
             }
         )
+        Slider(
+            value = size.toFloat(),
+            colors = SliderDefaults.colors(
+                thumbColor = Color.White, // 圆圈的颜色
+                activeTrackColor = Color(0xFF0079D3)
+            ),
+            steps = 1,
+            onValueChange = {
+                size = it.toUInt()
+            },
+        )
         Row(
-            modifier = Modifier.padding(top = 20.dp).fillMaxWidth(),
+            modifier = Modifier
+                .padding(top = 20.dp)
+                .fillMaxWidth(),
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -90,7 +107,7 @@ fun AddDialog(
                 Text(text = "取消")
             }
             Button(onClick = { /*TODO*/ }) {
-                Text(text = if(goodId == null)"确定" else "下一个")
+                Text(text = if (goodId == "") "确定" else "下一个")
             }
         }
 

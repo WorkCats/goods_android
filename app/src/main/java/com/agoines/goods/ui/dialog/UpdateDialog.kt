@@ -5,11 +5,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
-import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,31 +26,43 @@ import androidx.navigation.NavHostController
 @Composable
 fun UpdateDialog(
     navController: NavHostController,
-    goodId: String
+    goodId: String,
+    goodName: String,
+    userName: String,
+    goodSize: UInt,
+    fromCamera: Boolean = false
 ) {
+
     /**
      * 商品名
      */
-    val name = remember { mutableStateOf("") }
+    val name = remember { mutableStateOf(goodName) }
 
     /**
      * 用户名
      */
-    val userName = remember { mutableStateOf("") }
+    val username = remember { mutableStateOf(userName) }
 
     /**
      * 数量
      */
-    var size by remember { mutableStateOf(10u) }
+    var size by remember { mutableStateOf(goodSize) }
 
     Column(
         modifier = Modifier
+            .imePadding()
             .background(Color.White)
             .padding(vertical = 20.dp, horizontal = 20.dp)
+
     ) {
         Text(text = "货物更新")
-        Text(text = "更新的 ID 为 $goodId", fontSize = 12.sp, modifier = Modifier.padding(top = 10.dp))
-        TextField(modifier = Modifier.padding(top = 20.dp),
+        Text(
+            text = "更新的货物ID 为 $goodId",
+            fontSize = 12.sp,
+            modifier = Modifier.padding(top = 10.dp)
+        )
+
+        OutlinedTextField(modifier = Modifier.padding(top = 20.dp),
             value = name.value,
             label = { Text("名称") },
             placeholder = {
@@ -58,17 +71,19 @@ fun UpdateDialog(
             onValueChange = {
                 name.value = it
             })
-        TextField(
+
+        OutlinedTextField(
             modifier = Modifier.padding(top = 20.dp),
-            value = userName.value,
+            value = username.value,
             label = { Text("所属用户") },
             placeholder = {
                 Text("请输入货物所属用户的信息")
             },
             onValueChange = {
-                userName.value = it
+                username.value = it
             }
         )
+
         Row(
             modifier = Modifier
                 .padding(top = 20.dp)
@@ -76,11 +91,11 @@ fun UpdateDialog(
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            TextButton(onClick = { /*TODO*/ }) {
+            TextButton(onClick = { navController.popBackStack() }) {
                 Text(text = "取消")
             }
             Button(onClick = { /*TODO*/ }) {
-                Text(text = "确定")
+                Text(text = if (fromCamera) "确定" else "下一个")
             }
         }
 

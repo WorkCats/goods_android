@@ -12,8 +12,8 @@ import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.MaterialTheme.colors
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -55,7 +55,7 @@ fun IndexScene(
                 .padding(24.dp)
         ) {
 
-            TextField(
+            OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth(),
                 value = urlText.value,

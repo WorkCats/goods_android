@@ -1,15 +1,18 @@
 package com.agoines.goods.ui.scene
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.lazy.LazyColumn
@@ -47,7 +50,7 @@ import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox
 
 @Composable
-fun HomeScene(navHostController: NavHostController, viewModel: HomeViewModel = hiltViewModel()) {
+fun HomeScene(navController: NavHostController, viewModel: HomeViewModel = hiltViewModel()) {
     val goodList = remember {
         mutableStateListOf<Good>()
     }
@@ -78,19 +81,18 @@ fun HomeScene(navHostController: NavHostController, viewModel: HomeViewModel = h
                     title = {
                         Text(text = "首页")
                     },
+                    modifier = Modifier.padding(WindowInsets.statusBars.only(WindowInsetsSides.Horizontal).asPaddingValues()),
                     actions = {
                         Icon(
                             imageVector = Icons.Rounded.Settings,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .padding(end = 12.dp)
-                                .clickable {
-                                }
+                            contentDescription = "设置",
+                            modifier = Modifier.size(56.dp).padding(16.dp)
                         )
-                    }
+                    },
                 )
             }
         },
+
         floatingActionButton = {
             MultiFloatingActionButton(
                 modifier = Modifier.navigationBarsPadding(),
@@ -105,51 +107,50 @@ fun HomeScene(navHostController: NavHostController, viewModel: HomeViewModel = h
                         icon = Icons.Outlined.CameraAlt
                     )
                 ),
-                onFabItemClicked = {
-                    navHostController.navigate(Screen.Camera.route)
+                onFabItemClicked = { item ->
+                    when(item.label){
+                        "扫码" -> navController.navigate(Screen.Camera.route)
+                        "手动输入" -> navController.navigate(Screen.AddDialog.route)
+                    }
+
                 }
             )
-//            ExtendedFloatingActionButton(
-//                text = { Text("悬浮按钮") },
-//                onClick = {
-//                    scanLauncher.launch(ScanOptions())
-//                }
-//            )
         },
         floatingActionButtonPosition = FabPosition.End,
-        //屏幕内容区域
-        content = {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(it)
-            ) {
-                items(
-                    items = goodList,
-                    key = { good ->
-                        good.id
+    ) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(it)
+        ) {
+            items(
+                items = goodList,
+                key = { good ->
+                    good.id
+                },
+                contentType = { good ->
+                    good.userName
+                }
+            ) { good ->
+                GoodItem(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(96.dp),
+                    good = good,
+                    deleteEvent = {
+                        viewModel.delGood(goodId = good.id) {
+                            goodList.remove(good)
+                        }
                     },
-                    contentType = { good ->
-                        good.userName
-                    }
-                ) { good ->
-                    GoodItem(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(96.dp),
-                        good = good,
-                        deleteEvent = {
-                            viewModel.delGood(goodId = good.id) {
-                                goodList.remove(good)
-                            }
-                        },
-                        editEvent = {
+                    editEvent = {
+                        viewModel.editGood(navController = navController, good = good) {
 
                         }
-                    )
-                }
+                    }
+                )
             }
-        })
+        }
+    }
 //    Column(
 //        Modifier
 //            .fillMaxWidth()
