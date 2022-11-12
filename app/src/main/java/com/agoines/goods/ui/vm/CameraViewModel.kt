@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.agoines.goods.api.getGoodById
-import com.agoines.goods.data.Screen
+import com.agoines.goods.data.Good
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,26 +22,24 @@ class CameraViewModel @Inject constructor(
     private val toast: Toast,
     private val customTabsIntent: CustomTabsIntent
 ) : ViewModel() {
-    fun decodeResult(navController: NavHostController, goodId: String) {
+    fun decodeResult(
+        navController: NavHostController,
+        goodId: String,
+        updateGoodEvent: suspend (Good) -> Unit,
+        editGoodEvent: suspend () -> Unit,
+    ) {
         viewModelScope.launch(Dispatchers.IO) {
             dataStore.getGoodById(goodId = goodId).collect { goodResult ->
                 when (goodResult.errCode) {
                     0 -> {
-                        val good = goodResult.good!!
                         withContext(Dispatchers.Main) {
-                            navController.navigate(
-                                route = Screen.UpdateDialog.route
-                                        + "/goodId=${good.id}/goodName=${good.name}/userName=${good.userName}/goodSize=${good.size}"
-                            )
-
+                            updateGoodEvent(goodResult.good!!)
                         }
                     }
 
                     else -> {
                         withContext(Dispatchers.Main) {
-                            navController.navigate(
-                                route = Screen.AddDialog.route + "/goodId=${goodId}"
-                            )
+                            editGoodEvent()
                         }
                     }
                 }

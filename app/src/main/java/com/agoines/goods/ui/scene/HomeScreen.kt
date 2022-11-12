@@ -17,10 +17,12 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FabPosition
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.MaterialTheme.typography
+import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
@@ -31,11 +33,14 @@ import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.EditNote
 import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -46,9 +51,14 @@ import com.agoines.goods.data.Good
 import com.agoines.goods.data.Screen
 import com.agoines.goods.ui.composable.MultiFabItem
 import com.agoines.goods.ui.composable.MultiFloatingActionButton
+import com.agoines.goods.ui.dialog.AddBottomSheet
+import com.agoines.goods.ui.dialog.DelBottomSheet
+import com.agoines.goods.ui.dialog.UpdateBottomSheet
+import kotlinx.coroutines.launch
 import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeScene(navController: NavHostController, viewModel: HomeViewModel = hiltViewModel()) {
     val goodList = remember {
@@ -66,8 +76,24 @@ fun HomeScene(navController: NavHostController, viewModel: HomeViewModel = hiltV
         }
     }
 
+    val editGood = remember {
+        mutableStateOf(Good("", "", 0u, ""))
+    }
+    val updateSheetState =
+        rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
+    val addSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
+
+    val delSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
+    val delGood = remember {
+        mutableStateOf(Good("", "", 0u, ""))
+    }
+
+    val coroutineScope = rememberCoroutineScope()
+
     val scaffoldState = rememberScaffoldState()
+
     Scaffold(
+
         scaffoldState = scaffoldState,
         topBar = {
             Column {
@@ -81,12 +107,16 @@ fun HomeScene(navController: NavHostController, viewModel: HomeViewModel = hiltV
                     title = {
                         Text(text = "首页")
                     },
-                    modifier = Modifier.padding(WindowInsets.statusBars.only(WindowInsetsSides.Horizontal).asPaddingValues()),
+                    modifier = Modifier.padding(
+                        WindowInsets.statusBars.only(WindowInsetsSides.Horizontal).asPaddingValues()
+                    ),
                     actions = {
                         Icon(
                             imageVector = Icons.Rounded.Settings,
                             contentDescription = "设置",
-                            modifier = Modifier.size(56.dp).padding(16.dp)
+                            modifier = Modifier
+                                .size(56.dp)
+                                .padding(16.dp)
                         )
                     },
                 )
@@ -108,9 +138,11 @@ fun HomeScene(navController: NavHostController, viewModel: HomeViewModel = hiltV
                     )
                 ),
                 onFabItemClicked = { item ->
-                    when(item.label){
+                    when (item.label) {
                         "扫码" -> navController.navigate(Screen.Camera.route)
-                        "手动输入" -> navController.navigate(Screen.AddDialog.route)
+                        "手动输入" -> coroutineScope.launch {
+                            addSheetState.show()
+                        }
                     }
 
                 }
@@ -118,6 +150,7 @@ fun HomeScene(navController: NavHostController, viewModel: HomeViewModel = hiltV
         },
         floatingActionButtonPosition = FabPosition.End,
     ) {
+
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -125,12 +158,8 @@ fun HomeScene(navController: NavHostController, viewModel: HomeViewModel = hiltV
         ) {
             items(
                 items = goodList,
-                key = { good ->
-                    good.id
-                },
-                contentType = { good ->
-                    good.userName
-                }
+                key = { good -> good.id },
+                contentType = { good -> good.userName }
             ) { good ->
                 GoodItem(
                     modifier = Modifier
@@ -138,39 +167,48 @@ fun HomeScene(navController: NavHostController, viewModel: HomeViewModel = hiltV
                         .height(96.dp),
                     good = good,
                     deleteEvent = {
-                        viewModel.delGood(goodId = good.id) {
-                            goodList.remove(good)
+                        delGood.value = good
+                        coroutineScope.launch {
+                            delSheetState.show()
                         }
                     },
                     editEvent = {
-                        viewModel.editGood(navController = navController, good = good) {
-
+                        editGood.value = good
+                        coroutineScope.launch {
+                            updateSheetState.show()
                         }
                     }
                 )
             }
         }
     }
-//    Column(
-//        Modifier
-//            .fillMaxWidth()
-//            .fillMaxHeight()
-//    ) {
-//        Box(
-//            modifier = Modifier
-//                .windowInsetsTopHeight(WindowInsets.statusBars)
-//                .fillMaxWidth()
-//                .background(MaterialTheme.colors.primaryVariant)
-//        )
-//
-//
-//        Text(text = text.value)
-//
-//    }
+    UpdateBottomSheet(
+        sheetState = updateSheetState,
+        good = editGood.value,
+    )
+
+    AddBottomSheet(
+        sheetState = addSheetState
+    ) {
+        goodList.add(it)
+    }
+
+    DelBottomSheet(
+        sheetState = delSheetState,
+        goodId = delGood.value.id,
+        goodName = delGood.value.name,
+    ) {
+        goodList.remove(delGood.value)
+    }
 }
 
 @Composable
-fun GoodItem(modifier: Modifier, good: Good, deleteEvent: () -> Unit, editEvent: () -> Unit) {
+fun GoodItem(
+    modifier: Modifier,
+    good: Good,
+    deleteEvent: () -> Unit,
+    editEvent: () -> Unit
+) {
     val archive = SwipeAction(
         icon = {
             Icon(
