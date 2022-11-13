@@ -3,9 +3,12 @@ package com.agoines.goods.ui.dialog
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.imeAnimationTarget
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
 import androidx.compose.material.ExperimentalMaterialApi
@@ -30,6 +33,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.agoines.goods.data.Good
@@ -37,7 +41,7 @@ import com.agoines.goods.ui.composable.HorizontalNumberPicker
 import com.agoines.goods.ui.vm.AddBottomSheetViewModel
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalLayoutApi::class)
 @Composable
 fun AddBottomSheet(
     viewModel: AddBottomSheetViewModel = hiltViewModel(),
@@ -45,6 +49,9 @@ fun AddBottomSheet(
     goodId: String = "",
     resultEvent: (Good) -> Unit = {}
 ) {
+
+    val focusManager = LocalFocusManager.current
+
     val coroutineScope = rememberCoroutineScope()
 
     /**
@@ -71,7 +78,6 @@ fun AddBottomSheet(
 
     LaunchedEffect(sheetState.targetValue) {
         when (sheetState.targetValue) {
-
             ModalBottomSheetValue.Expanded -> {
                 name = ""
                 id = goodId
@@ -80,7 +86,7 @@ fun AddBottomSheet(
             }
 
             else -> {
-
+                focusManager.clearFocus()
             }
         }
     }
@@ -90,12 +96,15 @@ fun AddBottomSheet(
         sheetContent = {
             Column(
                 modifier = Modifier
-                    .imePadding()
+                    .padding(WindowInsets.imeAnimationTarget.asPaddingValues())
                     .padding(vertical = 20.dp, horizontal = 20.dp)
             ) {
                 Text(text = "货物添加", style = typography.h6)
 
-                OutlinedTextField(modifier = Modifier.padding(top = 20.dp),
+                OutlinedTextField(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 20.dp),
                     isError = idError,
                     value = id,
                     leadingIcon = {
@@ -113,7 +122,9 @@ fun AddBottomSheet(
                     })
 
                 OutlinedTextField(
-                    modifier = Modifier.padding(top = 20.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 20.dp),
                     value = name,
                     leadingIcon = {
                         Icon(
@@ -130,7 +141,9 @@ fun AddBottomSheet(
                     })
 
                 OutlinedTextField(
-                    modifier = Modifier.padding(top = 20.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 20.dp),
                     value = userName,
                     leadingIcon = {
                         Icon(

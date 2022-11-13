@@ -48,7 +48,7 @@ fun CameraScene(
     viewModel: CameraViewModel = hiltViewModel()
 ) {
     val scaffoldState = rememberScaffoldState()
-    val scope = rememberCoroutineScope()
+    val coroutineScope = rememberCoroutineScope()
 
     val compoundBarcodeView = CompoundBarcodeView(LocalContext.current)
 
@@ -137,7 +137,7 @@ fun CameraScene(
                 if (scanFlag) return@decodeContinuous
                 scanFlag = true
                 if (result!!.text.isHttp()) {
-                    scope.launch {
+                    coroutineScope.launch {
                         scaffoldState.snackbarHostState.showSnackbar(
                             message = result.text,
                             actionLabel = "前往",
@@ -153,11 +153,15 @@ fun CameraScene(
                         goodId = goodId,
                         updateGoodEvent = { good ->
                             editGood.value = good
-                            updateSheetState.show()
+                            coroutineScope.launch {
+                                updateSheetState.show()
+                            }
                         },
                         editGoodEvent = {
                             addGoodId.value = goodId
-                            addSheetState.show()
+                            coroutineScope.launch {
+                                addSheetState.show()
+                            }
 
                         }
                     )
@@ -172,7 +176,8 @@ fun CameraScene(
         )
 
         AddBottomSheet(
-            sheetState = addSheetState
+            sheetState = addSheetState,
+            goodId = addGoodId.value
         )
     }
 }

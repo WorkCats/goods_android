@@ -5,9 +5,12 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.imeAnimationTarget
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
 import androidx.compose.material.ExperimentalMaterialApi
@@ -31,6 +34,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.agoines.goods.data.Good
@@ -38,7 +42,7 @@ import com.agoines.goods.ui.composable.HorizontalNumberPicker
 import com.agoines.goods.ui.vm.UpdateBottomSheetViewModel
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalLayoutApi::class)
 @Composable
 fun UpdateBottomSheet(
     viewModel: UpdateBottomSheetViewModel = hiltViewModel(),
@@ -47,6 +51,7 @@ fun UpdateBottomSheet(
     fromCamera: Boolean = false,
     resultEvent: (Good) -> Unit = {}
 ) {
+    val focusManager = LocalFocusManager.current
 
     val bottomSheetState by remember { mutableStateOf(BottomSheetState.BeforeLoading) }
 
@@ -68,11 +73,16 @@ fun UpdateBottomSheet(
     var size by remember { mutableStateOf(0u) }
 
     LaunchedEffect(sheetState.targetValue) {
-        if (sheetState.targetValue == ModalBottomSheetValue.Expanded) {
-            size = good.size
-            name = good.name
-            username = good.userName
+        when (sheetState.targetValue) {
+            ModalBottomSheetValue.Expanded -> {
+                size = good.size
+                name = good.name
+                username = good.userName
 
+            }
+
+            else ->
+                focusManager.clearFocus()
         }
     }
 
@@ -80,7 +90,9 @@ fun UpdateBottomSheet(
         sheetState = sheetState,
         sheetContent = {
             Box(
-                modifier = Modifier.imePadding().padding(vertical = 20.dp, horizontal = 20.dp)
+                modifier = Modifier
+                    .padding(WindowInsets.imeAnimationTarget.asPaddingValues())
+                    .padding(vertical = 20.dp, horizontal = 20.dp)
             ) {
                 Crossfade(targetState = bottomSheetState) { screen ->
                     Column {
@@ -93,7 +105,9 @@ fun UpdateBottomSheet(
                                     modifier = Modifier.padding(top = 10.dp)
                                 )
                                 OutlinedTextField(
-                                    modifier = Modifier.padding(top = 20.dp),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 20.dp),
 
                                     value = name,
                                     leadingIcon = {
@@ -111,7 +125,9 @@ fun UpdateBottomSheet(
                                     })
 
                                 OutlinedTextField(
-                                    modifier = Modifier.padding(top = 20.dp),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 20.dp),
                                     value = username,
                                     leadingIcon = {
                                         Icon(

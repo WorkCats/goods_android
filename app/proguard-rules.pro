@@ -10,6 +10,21 @@
 #保持泛型
 -keepattributes Signature
 
+#保持枚举
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
+
+# 避免Log打印输出
+-assumenosideeffects class android.util.Log {
+        public static *** v(...);
+        public static *** d(...);
+        public static *** i(...);
+        public static *** w(...);
+        public static *** e(...);
+}
+
 -assumenosideeffects class kotlin.jvm.internal.Intrinsics {
     public static void check*(...);
     public static void throw*(...);
@@ -58,16 +73,6 @@
 -keepclassmembers class <2>$<3> {
     kotlinx.serialization.KSerializer serializer(...);
 }
-#（可选）避免Log打印输出
--assumenosideeffects class android.util.Log {
-        public static *** v(...);
-        public static *** d(...);
-        public static *** i(...);
-        public static *** w(...);
-        public static *** e(...);
-}
-
-
 
 # Keep `INSTANCE.serializer()` of serializable objects.
 -if @kotlinx.serialization.Serializable class ** {
@@ -84,7 +89,6 @@
 -keep class com.drake.net.**
 
 -keep class com.agoines.goods.**
-
 
 # 不去打印这些错误
 -dontwarn org.bouncycastle.jsse.BCSSLParameters

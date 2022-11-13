@@ -5,9 +5,12 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.imeAnimationTarget
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
 import androidx.compose.material.ExperimentalMaterialApi
@@ -27,6 +30,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.agoines.goods.ui.vm.DelBottomSheetViewModel
@@ -34,7 +38,7 @@ import kotlinx.coroutines.launch
 
 
 @Composable
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalLayoutApi::class)
 fun DelBottomSheet(
     viewModel: DelBottomSheetViewModel = hiltViewModel(),
     sheetState: ModalBottomSheetState,
@@ -42,20 +46,29 @@ fun DelBottomSheet(
     goodName: String,
     resultEvent: () -> Unit
 ) {
+    val focusManager = LocalFocusManager.current
+
     var bottomSheetState by remember { mutableStateOf(BottomSheetState.BeforeLoading) }
 
     val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(sheetState.targetValue) {
-        if (sheetState.targetValue == ModalBottomSheetValue.Expanded) {
-            bottomSheetState = BottomSheetState.BeforeLoading
+        when (sheetState.targetValue) {
+            ModalBottomSheetValue.Expanded -> {
+                bottomSheetState = BottomSheetState.BeforeLoading
+            }
+
+            else ->
+                focusManager.clearFocus()
         }
     }
     ModalBottomSheetLayout(
         sheetState = sheetState,
         sheetContent = {
             Box(
-                modifier = Modifier.imePadding().padding(vertical = 20.dp, horizontal = 20.dp)
+                modifier = Modifier
+                    .padding(WindowInsets.imeAnimationTarget.asPaddingValues())
+                    .padding(vertical = 20.dp, horizontal = 20.dp)
             ) {
                 Crossfade(targetState = bottomSheetState) { screen ->
                     Column {

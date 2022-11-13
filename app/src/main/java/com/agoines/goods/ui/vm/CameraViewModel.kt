@@ -13,7 +13,6 @@ import com.agoines.goods.data.Good
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -25,23 +24,15 @@ class CameraViewModel @Inject constructor(
     fun decodeResult(
         navController: NavHostController,
         goodId: String,
-        updateGoodEvent: suspend (Good) -> Unit,
-        editGoodEvent: suspend () -> Unit,
+        updateGoodEvent: (Good) -> Unit,
+        editGoodEvent: () -> Unit,
     ) {
         viewModelScope.launch(Dispatchers.IO) {
             dataStore.getGoodById(goodId = goodId).collect { goodResult ->
                 when (goodResult.errCode) {
-                    0 -> {
-                        withContext(Dispatchers.Main) {
-                            updateGoodEvent(goodResult.good!!)
-                        }
-                    }
+                    0 -> updateGoodEvent(goodResult.good!!)
 
-                    else -> {
-                        withContext(Dispatchers.Main) {
-                            editGoodEvent()
-                        }
-                    }
+                    else -> editGoodEvent()
                 }
             }
         }

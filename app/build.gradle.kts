@@ -61,11 +61,16 @@ dependencies {
     val composeUIVersion = "1.4.0-alpha02"
     val navigationVersion = "2.5.3"
     val lifecycleVersion = "2.6.0-alpha03"
+    val cameraxVersion = "1.3.0-alpha01"
     // 浏览器使用
     implementation("androidx.browser:browser:1.4.0")
     // 二维码识别
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
     implementation("com.google.zxing:core:3.5.1")
+//    implementation("androidx.camera:camera-core:${cameraxVersion}")
+//    implementation("androidx.camera:camera-camera2:${cameraxVersion}")
+//    implementation("androidx.camera:camera-lifecycle:${cameraxVersion}")
+//    implementation("androidx.camera:camera-view:${cameraxVersion}")
 
     // 网络组件库
     implementation("com.squareup.okhttp3:okhttp:4.10.0")
@@ -90,13 +95,16 @@ dependencies {
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.0-alpha03")
     implementation("androidx.activity:activity-compose:1.6.1")
+
     // compose
     implementation("androidx.compose.ui:ui:$composeUIVersion")
-    implementation("androidx.compose.material:material-icons-core:$composeUIVersion")
-    implementation("androidx.compose.material:material-icons-extended:$composeUIVersion")
-    implementation("androidx.compose.ui:ui-tooling-preview:$composeUIVersion")
+    implementation("androidx.compose.foundation:foundation-layout:$composeUIVersion")
     implementation("androidx.compose.material:material:$composeUIVersion")
     implementation("androidx.navigation:navigation-compose:$navigationVersion")
+
+    // compose icon
+    implementation("androidx.compose.material:material-icons-core:$composeUIVersion")
+    implementation("androidx.compose.material:material-icons-extended:$composeUIVersion")
 
     // compose 组件
     implementation("me.saket.swipe:swipe:1.0.0")
