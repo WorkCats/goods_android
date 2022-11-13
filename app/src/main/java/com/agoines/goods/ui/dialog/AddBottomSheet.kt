@@ -56,6 +56,7 @@ fun AddBottomSheet(
      * id
      */
     var id by remember { mutableStateOf("") }
+    var idError by remember { mutableStateOf(false) }
 
     /**
      * 用户名
@@ -67,17 +68,20 @@ fun AddBottomSheet(
      */
     var size by remember { mutableStateOf(10u) }
 
+
     LaunchedEffect(sheetState.targetValue) {
-        if (sheetState.targetValue == ModalBottomSheetValue.Expanded) {
-            id = goodId
-        }
-    }
-    LaunchedEffect(sheetState.targetValue) {
-        if (sheetState.targetValue == ModalBottomSheetValue.Expanded) {
-            name = ""
-            id = goodId
-            userName = ""
-            size = 10u
+        when (sheetState.targetValue) {
+
+            ModalBottomSheetValue.Expanded -> {
+                name = ""
+                id = goodId
+                userName = ""
+                size = 10u
+            }
+
+            else -> {
+
+            }
         }
     }
 
@@ -92,6 +96,7 @@ fun AddBottomSheet(
                 Text(text = "货物添加", style = typography.h6)
 
                 OutlinedTextField(modifier = Modifier.padding(top = 20.dp),
+                    isError = idError,
                     value = id,
                     leadingIcon = {
                         Icon(
@@ -176,16 +181,28 @@ fun AddBottomSheet(
                         Text(text = "取消")
                     }
                     Button(onClick = {
-                        viewModel.addGood(
-                            good = Good(id, name, size, userName),
+                        viewModel.hasGood(
+                            id,
                             resultEvent = {
-                                resultEvent(Good(id, name, size, userName))
-                                coroutineScope.launch {
-                                    sheetState.hide()
+                                idError = it
+                                if (!idError) {
+                                    viewModel.addGood(
+                                        good = Good(id, name, size, userName),
+                                        resultEvent = {
+                                            resultEvent(Good(id, name, size, userName))
+                                            coroutineScope.launch {
+                                                sheetState.hide()
+                                            }
+                                        },
+                                        {}
+                                    )
                                 }
                             },
-                            {}
+                            throwEvent = {
+
+                            }
                         )
+
                     }) {
                         Text(text = if (goodId == "") "确定" else "下一个")
                     }
