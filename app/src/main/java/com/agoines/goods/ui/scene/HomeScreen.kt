@@ -185,7 +185,15 @@ fun HomeScene(navController: NavHostController, viewModel: HomeViewModel = hiltV
     UpdateBottomSheet(
         sheetState = updateSheetState,
         good = editGood.value,
-    )
+    ) {
+        for (i in 0 until goodList.size) {
+            if (goodList[i].id == it.id) {
+                goodList[i].name = it.name
+                goodList[i].userName = it.userName
+                goodList[i].size = it.size
+            }
+        }
+    }
 
     AddBottomSheet(
         sheetState = addSheetState

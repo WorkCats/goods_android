@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowLeft
 import androidx.compose.material.icons.rounded.ArrowRight
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment.Companion.CenterVertically
@@ -32,6 +33,8 @@ fun HorizontalNumberPicker(
     onValueChange: (UInt) -> Unit = {}
 ) {
     val number = remember { mutableStateOf(default) }
+
+    LaunchedEffect(default) { number.value = default }
 
     Row(
         verticalAlignment = CenterVertically,

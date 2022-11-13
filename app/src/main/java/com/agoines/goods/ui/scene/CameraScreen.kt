@@ -72,11 +72,13 @@ fun CameraScene(
             darkIcons = false,
             isNavigationBarContrastEnforced = false
         )
+
         systemUiController.setNavigationBarColor(
             color = Color.Transparent,
             navigationBarContrastEnforced = false,
             darkIcons = !useDarkIcons
         )
+
         onDispose {
             compoundBarcodeView.pauseAndWait()
         }

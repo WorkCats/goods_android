@@ -32,16 +32,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.agoines.goods.data.Good
 import com.agoines.goods.ui.composable.HorizontalNumberPicker
+import com.agoines.goods.ui.vm.UpdateBottomSheetViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun UpdateBottomSheet(
+    viewModel: UpdateBottomSheetViewModel = hiltViewModel(),
     sheetState: ModalBottomSheetState,
     good: Good,
-    fromCamera: Boolean = false
+    fromCamera: Boolean = false,
+    resultEvent: (Good) -> Unit = {}
 ) {
 
     val bottomSheetState by remember { mutableStateOf(BottomSheetState.BeforeLoading) }
@@ -65,9 +69,10 @@ fun UpdateBottomSheet(
 
     LaunchedEffect(sheetState.targetValue) {
         if (sheetState.targetValue == ModalBottomSheetValue.Expanded) {
+            size = good.size
             name = good.name
             username = good.userName
-            size = good.size
+
         }
     }
 
@@ -78,7 +83,7 @@ fun UpdateBottomSheet(
                 modifier = Modifier.imePadding().padding(vertical = 20.dp, horizontal = 20.dp)
             ) {
                 Crossfade(targetState = bottomSheetState) { screen ->
-                    Column() {
+                    Column {
                         when (screen) {
                             BottomSheetState.BeforeLoading -> {
                                 Text(text = "货物更新", style = MaterialTheme.typography.h6)
@@ -158,7 +163,18 @@ fun UpdateBottomSheet(
                                         Text(text = "取消")
                                     }
 
-                                    Button(onClick = {}) {
+                                    Button(onClick = {
+                                        viewModel.updateGood(
+                                            good = Good(good.id, name, size, username),
+                                            resultEvent = {
+                                                resultEvent(Good(good.id, name, size, username))
+                                                coroutineScope.launch {
+                                                    sheetState.hide()
+                                                }
+                                            },
+                                            {}
+                                        )
+                                    }) {
                                         Text(text = if (fromCamera) "下一步" else "确定")
                                     }
                                 }
