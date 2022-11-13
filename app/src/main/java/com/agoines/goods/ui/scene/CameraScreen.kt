@@ -142,9 +142,7 @@ fun CameraScene(
                             message = result.text,
                             actionLabel = "前往",
                         )
-
                         scanFlag = false
-
                     }
                 } else {
                     val goodId = "${result.barcodeFormat.name}_${result.text}"
@@ -173,11 +171,13 @@ fun CameraScene(
         UpdateBottomSheet(
             sheetState = updateSheetState,
             good = editGood.value,
+            resultEvent = { scanFlag = false },
         )
 
         AddBottomSheet(
             sheetState = addSheetState,
-            goodId = addGoodId.value
+            goodId = addGoodId.value,
+            resultEvent = { scanFlag = false },
         )
     }
 }
