@@ -132,7 +132,7 @@ fun HomeScene(navController: NavHostController, viewModel: HomeViewModel = hiltV
                             imageVector = Icons.Rounded.Settings,
                             contentDescription = "设置",
                             modifier = Modifier
-                                .size(56.dp)
+                                .size(48.dp)
                                 .padding(16.dp)
                         )
                     },
@@ -274,7 +274,7 @@ fun GoodItem(
         endActions = listOf(snooze),
         modifier = modifier
     ) {
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.White)
@@ -282,12 +282,13 @@ fun GoodItem(
         ) {
             Text(
                 text = good.name,
-                modifier = Modifier.padding(vertical = 2.dp),
+                modifier = Modifier.align(Alignment.TopStart).padding(vertical = 2.dp),
                 style = typography.subtitle1,
                 fontWeight = FontWeight(540)
             )
             Box(
                 modifier = Modifier
+                    .align(Alignment.BottomStart)
                     .fillMaxWidth()
                     .padding(vertical = 2.dp),
                 contentAlignment = Alignment.CenterStart
