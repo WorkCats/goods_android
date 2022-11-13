@@ -108,6 +108,7 @@ dependencies {
 
     // compose 组件
     implementation("me.saket.swipe:swipe:1.0.0")
+    implementation("me.saket.extendedspans:extendedspans:1.3.0")
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.27.0")
     implementation("com.github.develNerd:JC-CustomSwitch:1.0.1")
 

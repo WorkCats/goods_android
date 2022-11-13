@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Good(
     val id: String,
-    var name: String,
-    var size: UInt,
-    @SerialName(value = "user_name") var userName: String
+    val name: String,
+    val size: UInt,
+    @SerialName(value = "user_name") val userName: String
 )

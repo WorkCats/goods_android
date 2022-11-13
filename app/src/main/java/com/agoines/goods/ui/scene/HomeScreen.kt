@@ -1,8 +1,10 @@
 package com.agoines.goods.ui.scene
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
@@ -17,10 +19,11 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FabPosition
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Scaffold
@@ -29,10 +32,11 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CameraAlt
 import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.EditNote
+import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.twotone.Delete
+import androidx.compose.material.icons.twotone.Edit
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
@@ -41,9 +45,18 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.agoines.goods.ui.vm.HomeViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -55,6 +68,10 @@ import com.agoines.goods.ui.dialog.AddBottomSheet
 import com.agoines.goods.ui.dialog.DelBottomSheet
 import com.agoines.goods.ui.dialog.UpdateBottomSheet
 import kotlinx.coroutines.launch
+import me.saket.extendedspans.ExtendedSpans
+import me.saket.extendedspans.SquigglyUnderlineSpanPainter
+import me.saket.extendedspans.drawBehind
+import me.saket.extendedspans.rememberSquigglyUnderlineAnimator
 import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox
 
@@ -101,7 +118,7 @@ fun HomeScene(navController: NavHostController, viewModel: HomeViewModel = hiltV
                     modifier = Modifier
                         .windowInsetsTopHeight(WindowInsets.statusBars)
                         .fillMaxWidth()
-                        .background(MaterialTheme.colors.primaryVariant)
+                        .background(colors.primaryVariant)
                 )
                 TopAppBar(
                     title = {
@@ -188,9 +205,7 @@ fun HomeScene(navController: NavHostController, viewModel: HomeViewModel = hiltV
     ) {
         for (i in 0 until goodList.size) {
             if (goodList[i].id == it.id) {
-                goodList[i].name = it.name
-                goodList[i].userName = it.userName
-                goodList[i].size = it.size
+                goodList[i] = it
             }
         }
     }
@@ -217,14 +232,20 @@ fun GoodItem(
     deleteEvent: () -> Unit,
     editEvent: () -> Unit
 ) {
+
+
     val archive = SwipeAction(
         icon = {
-            Icon(
-                imageVector = Icons.Rounded.Delete,
-                contentDescription = null,
-            )
+            Box(modifier = Modifier.padding(end = 16.dp)) {
+                Icon(
+                    imageVector = Icons.TwoTone.Delete,
+                    contentDescription = null,
+                    tint = colors.onError
+                )
+            }
+
         },
-        background = Color.Green,
+        background = colors.error,
         onSwipe = {
             deleteEvent.invoke()
         }
@@ -232,12 +253,16 @@ fun GoodItem(
 
     val snooze = SwipeAction(
         icon = {
-            Icon(
-                imageVector = Icons.Rounded.Edit,
-                contentDescription = null,
-            )
+            Box(modifier = Modifier.padding(start = 16.dp)) {
+                Icon(
+                    imageVector = Icons.TwoTone.Edit,
+                    contentDescription = null,
+                    tint = colors.onPrimary
+                )
+            }
+
         },
-        background = Color.Yellow,
+        background = colors.secondary,
         isUndo = true,
         onSwipe = {
             editEvent.invoke()
@@ -253,9 +278,94 @@ fun GoodItem(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.White)
+                .padding(16.dp)
         ) {
-            Text(text = good.name, style = typography.subtitle2)
-            Text(text = good.userName, style = typography.body1)
+            Text(
+                text = good.name,
+                modifier = Modifier.padding(vertical = 2.dp),
+                style = typography.subtitle1,
+                fontWeight = FontWeight(540)
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 2.dp),
+                contentAlignment = Alignment.CenterStart
+            ) {
+
+                ExtendedSpansText(
+                    text = buildAnnotatedString {
+                        if (good.size < 20u) {
+                            withStyle(
+                                SpanStyle(
+                                    textDecoration = TextDecoration.Underline,
+                                    color = colors.error
+                                )
+                            ) {
+                                append("数量：${good.size}")
+                            }
+                        } else {
+                            append("数量：${good.size}")
+                        }
+                    }
+                )
+
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(color = colors.primary.copy(alpha = 0.2f))
+                        .padding(4.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Person,
+                        contentDescription = "",
+                        Modifier.size(16.dp),
+                        tint = colors.primary
+                    )
+                    Text(
+                        text = good.userName,
+                        modifier = Modifier
+                            .padding(horizontal = 4.dp)
+                            .align(Alignment.CenterVertically),
+                        style = typography.body2,
+                        color = colors.primary
+                    )
+                }
+
+
+            }
         }
     }
+}
+
+@Composable
+fun ExtendedSpansText(
+    text: AnnotatedString,
+    modifier: Modifier = Modifier,
+) {
+    val underlineAnimator = rememberSquigglyUnderlineAnimator()
+    val extendedSpans = remember {
+        ExtendedSpans(
+            SquigglyUnderlineSpanPainter(
+                width = 2.sp,
+                wavelength = 20.sp,
+                amplitude = 2.sp,
+                bottomOffset = 2.sp,
+                animator = underlineAnimator
+            )
+        )
+    }
+
+    Text(
+        modifier = modifier.drawBehind(extendedSpans),
+        text = remember(text) {
+            extendedSpans.extend(text)
+        },
+        onTextLayout = { result ->
+            extendedSpans.onTextLayout(result)
+        }
+    )
 }
